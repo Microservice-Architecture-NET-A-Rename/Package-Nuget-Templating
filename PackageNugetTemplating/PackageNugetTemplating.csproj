@@ -5,7 +5,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	<PackageId>PackageNugetTemplating</PackageId>
-	<Version>1.0.0</Version>
 	<Authors>PackageNugetTemplating</Authors>
 	<Company>PackageNugetTemplating</Company>
 	<Description>Description de votre package</Description>
