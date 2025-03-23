@@ -2,42 +2,80 @@
 
 ## Objectif du projet
 
-Ce projet vise ‡ dÈvelopper un template pour faciliter la crÈation rapide de packages .NET, incluant tous les workflows nÈcessaires ‡ leur publication et ‡ la gÈnÈration automatique de notes de version.
+Ce projet vise √† d√©velopper un template pour faciliter la cr√©ation rapide de packages .NET, incluant tous les workflows n√©cessaires √† leur publication et √† la g√©n√©ration automatique de notes de version.
 
-## …tat actuel
+## √âtat actuel
 
-Le projet est actuellement en phase de conception et de documentation. Aucune implÈmentation n'a encore ÈtÈ rÈalisÈe.
+Le projet est actuellement en phase de conception et de documentation. Aucune impl√©mentation n'a encore √©t√© r√©alis√©e.
 
-## FonctionnalitÈs envisagÈes
+## Fonctionnalit√©s envisag√©es
 
-### CrÈation et gestion de packages
+### Cr√©ation et gestion de packages
 
-- Utilisation de `dotnet.exe` pour la gestion des packages, offrant une meilleure intÈgration avec l'ÈcosystËme .NET.
+- Utilisation de `dotnet.exe` pour la gestion des packages, offrant une meilleure int√©gration avec l'√©cosyst√®me .NET.
 - Mise en place d'un processus de test avant publication.
-- IntÈgration avec GitHub Package Registry pour les flux privÈs.
+- Int√©gration avec GitHub Package Registry pour les flux priv√©s.
 
 ### Versioning
 
-- Utilisation de Nerdbank.GitVersioning pour l'incrÈmentation automatique des numÈros de version.
+- Utilisation de Nerdbank.GitVersioning pour l'incr√©mentation automatique des num√©ros de version.
+- Strat√©gie de versionnage uniformis√©e d√©finie dans un fichier `version.json` √† la racine du projet.
+- Utilisation de tags conventionn√©s pour mettre √† jour des packages sp√©cifiques : `{project-name}-v1.0`.
+
+### Templates
+
+Deux templates seront cr√©√©s :
+1. Configuration du versionnage
+2. Ajout d'un nouveau projet avec un .csproj pr√©-initialis√© dans la solution g√©n√©r√©e par le premier template
 
 ### Tests locaux
 
-- DÈveloppement d'une mÈthode pour tester localement les packages NuGet sans publication.
+- D√©veloppement d'une m√©thode pour tester localement les packages NuGet sans publication.
 
 ### Workflow de publication
 
-- CrÈation d'un workflow inspirÈ du projet MicroServiceTemplating.
-- Automatisation du processus de versioning et de publication.
+- Cr√©ation d'un workflow d√©clench√© manuellement √† la cr√©ation d'un tag.
+- Cr√©ation d'une release en mode brouillon du package √† publier.
+- Publication du package sur GitHub Package Registry lors de la publication de la release.
 
-## Prochaines Ètapes
+## Configuration du projet
 
-1. Finaliser la documentation pour chaque Ètape du processus.
-2. ImplÈmenter le workflow de crÈation, test et publication.
-3. IntÈgrer le versioning automatique avec Nerdbank.GitVersioning.
-4. DÈvelopper des instructions pour les tests locaux.
-5. Configurer l'intÈgration avec GitHub Package Registry.
+### Installation de Nerdbank.GitVersioning
 
-## Ressources ‡ explorer
+```bash
+dotnet tool install --tool-path .config/dotnet-tools nbgv
+.config/dotnet-tools/nbgv install
+```
+
+### Empaquetage des packages NuGet
+
+```bash
+dotnet pack
+```
+
+### Structure du projet
+
+- Chaque projet .NET dans la solution repr√©sentera un package NuGet.
+- Les informations telles que la description, l'auteur et la soci√©t√© du package seront centralis√©es dans le .csproj.
+- Important : Pour le PackageId, tous les mots doivent √™tre coll√©s.
+
+### Notes de Release
+
+Les notes de release seront conventionn√©es comme suit :
+```
+feat(project-name) description 
+fix(project-name) description
+```
+
+## Prochaines √©tapes
+
+1. Finaliser la documentation pour chaque √©tape du processus.
+2. Impl√©menter le workflow de cr√©ation, test et publication.
+3. Int√©grer le versioning automatique avec Nerdbank.GitVersioning.
+4. D√©velopper des instructions pour les tests locaux.
+5. Configurer l'int√©gration avec GitHub Package Registry.
+
+## Ressources √† explorer
 
 - [GitVersion Documentation](https://gitversion.net/docs/)
 - [GitHub Packages Documentation](https://docs.github.com/fr/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry)
@@ -48,4 +86,4 @@ Le projet est actuellement en phase de conception et de documentation. Aucune im
 - [Azure DevOps Artifacts](https://learn.microsoft.com/fr-fr/azure/devops/artifacts/nuget/publish?view=azure-devops)
 - [Nerdbank.GitVersioning](https://github.com/dotnet/Nerdbank.GitVersioning)
 
-Note : Ce projet est en cours de dÈveloppement. Les fonctionnalitÈs et les processus dÈcrits sont sujets ‡ modification au fur et ‡ mesure de l'avancement du projet.
+Note : Ce projet est en cours de d√©veloppement. Les fonctionnalit√©s et les processus d√©crits sont sujets √† modification au fur et √† mesure de l'avancement du projet.
