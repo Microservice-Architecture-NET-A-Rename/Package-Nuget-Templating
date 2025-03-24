@@ -44,11 +44,10 @@ jobs:
               echo "Pas de tag précédent trouvé. Génération depuis le début du projet."
               npx conventional-changelog-cli -p angular -r 0 > release_notes.md
             else
-              echo "Génération entre $PREVIOUS_TAG et $LATEST_TAG"
-              
-              git log $PREVIOUS_TAG..$LATEST_TAG --grep="\($PACKAGE_NAME\)" -E --pretty=format:"%H" | \
-              xargs -I {} npx conventional-changelog-cli -p angular --commit-path={} -o release_notes.md
+              echo "Génération entre $PREVIOUS_TAG et $LATEST_TAG"              
+              npx conventional-changelog-cli -p angular --commit-path=./$PACKAGE_NAME -r 2 > release_notes.md
             fi
+
 
             echo "Contenu de release_notes.md:"
             cat release_notes.md
