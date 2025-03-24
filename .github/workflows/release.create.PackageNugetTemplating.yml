@@ -42,7 +42,7 @@ jobs:
 
             if [ -z "$PREVIOUS_TAG" ]; then
               echo "Pas de tag précédent trouvé. Génération depuis le début du projet."
-              npx conventional-changelog-cli -p angular --commit-path=./$PACKAGE_NAME -r 0 > release_notes.md
+              npx conventional-changelog-cli -t $PACKAGE_NAME-v -p angular --commit-path=./$PACKAGE_NAME -r 0 > release_notes.md
             else
               echo "Génération entre $PREVIOUS_TAG et $LATEST_TAG"              
               npx conventional-changelog-cli -t $PACKAGE_NAME-v -p angular --commit-path=./$PACKAGE_NAME -r 2 > release_notes.md
