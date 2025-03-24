@@ -51,7 +51,8 @@ jobs:
               cat commits.txt
               
               while read -r commit; do
-                npx conventional-changelog-cli -p angular --commit-path "$commit" -o release_notes.md --append
+                npx conventional-changelog-cli -p angular --commit-path="$commit" -o temp_notes.md
+                cat temp_notes.md >> release_notes.md
               done < commits.txt
             fi
 
