@@ -50,7 +50,9 @@ jobs:
               echo "Contenu de commits.txt:"
               cat commits.txt
               
-              cat commits.txt | xargs -I {} npx conventional-changelog-cli -p angular --commit-path {} -o release_notes.md
+              while read -r commit; do
+                npx conventional-changelog-cli -p angular --commit-path "$commit" -o release_notes.md --append
+              done < commits.txt
             fi
 
             echo "Contenu de release_notes.md:"
