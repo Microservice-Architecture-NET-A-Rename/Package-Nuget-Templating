@@ -34,7 +34,7 @@ Deux templates seront créés :
 
 ### Workflow de publication
 
-- Création d'un workflow déclenché manuellement à la création d'un tag.
+- Création d'un workflow déclenché à la création d'un tag.
 - Création d'une release en mode brouillon du package à publier.
 - Publication du package sur GitHub Package Registry lors de la publication de la release.
 
