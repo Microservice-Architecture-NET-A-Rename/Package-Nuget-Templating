@@ -50,6 +50,7 @@ jobs:
               xargs -I {} npx conventional-changelog-cli -p angular --commit-path {} -o release_notes.md
             fi
 
+
             echo "Contenu de release_notes.md:"
             cat release_notes.md
 
