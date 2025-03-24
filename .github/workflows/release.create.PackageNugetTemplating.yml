@@ -1,0 +1,78 @@
+name: Create Release PackageNugetTemplating
+
+on:
+  push:
+    tags:
+      - "PackageNugetTemplating-v*.*.*"
+
+permissions:
+    contents: write
+    repository-projects: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install conventional-changelog-cli
+
+      - name: Generate Release Notes
+        id: release_notes
+        run: |
+            PACKAGE_NAME="PackageNugetTemplating"
+
+            # Récupérer le dernier tag (le plus récent)
+            LATEST_TAG=$(git describe --tags --abbrev=0)
+
+            # Récupérer l'avant-dernier tag (s'il existe)
+            PREVIOUS_TAG=$(git describe --tags --abbrev=0 $LATEST_TAG^)
+
+            echo "Latest tag $LATEST_TAG"
+            echo "Previous tag $PREVIOUS_TAG"
+
+            if [ -z "$PREVIOUS_TAG" ]; then
+             echo "Pas de tag précédent trouvé. Génération depuis le début du projet."
+             npx conventional-changelog-cli -p angular -r 0 > release_notes.md
+            else
+             echo "Génération entre $PREVIOUS_TAG et $LATEST_TAG"
+             npx conventional-changelog-cli -p angular -r 2 > release_notes.md
+             git log --grep="^(feature|fix|docs)\($PACKAGE_NAME\)" -E --format=%H | \
+             xargs -I {} npx conventional-changelog-cli -p angular --commit-path {} -o release_notes.md
+            fi
+
+            echo "Contenu de release_notes.md:"
+            cat release_notes.md
+
+          
+            RELEASE_NOTES=$(cat release_notes.md)
+            RELEASE_NOTES_JSON=$(echo "$RELEASE_NOTES" | jq -R -s '.')
+            echo "RELEASE_NOTES=$RELEASE_NOTES_JSON" >> $GITHUB_OUTPUT
+
+      - name: Get tag
+        id: tag
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          body: ${{ fromJson(steps.release_notes.outputs.RELEASE_NOTES) }}
+          tag_name: ${{ steps.tag.outputs.TAG }}
+          name: Release ${{ steps.tag.outputs.TAG }}
+          draft: true
+          prerelease: false
+          generate_release_notes: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
