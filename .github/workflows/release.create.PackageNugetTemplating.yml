@@ -51,6 +51,7 @@ jobs:
             fi
 
 
+
             echo "Contenu de release_notes.md:"
             cat release_notes.md
 
