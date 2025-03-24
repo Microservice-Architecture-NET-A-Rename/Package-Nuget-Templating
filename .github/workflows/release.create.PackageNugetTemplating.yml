@@ -45,8 +45,8 @@ jobs:
               npx conventional-changelog-cli -p angular -r 0 > release_notes.md
             else
               echo "Génération entre $PREVIOUS_TAG et $LATEST_TAG"
-              git log "$PREVIOUS_TAG".."$LATEST_TAG" --grep="($PACKAGE_NAME)" -E --format=%H | \
-              xargs -I {} npx conventional-changelog-cli -p angular --commit-path {} -o release_notes.md
+              git log "$PREVIOUS_TAG".."$LATEST_TAG" --grep="($PACKAGE_NAME)" -E --format=%H > commits.txt
+              cat commits.txt | xargs -I {} npx conventional-changelog-cli -p angular --commit-path {} -o release_notes.md
             fi
 
             echo "Contenu de release_notes.md:"
