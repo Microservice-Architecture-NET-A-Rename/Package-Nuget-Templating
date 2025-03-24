@@ -49,6 +49,7 @@ jobs:
               npx conventional-changelog-cli -p angular -r 0 > release_notes.md
             fi
 
+
             echo "Contenu de release_notes.md:"
             cat release_notes.md
 
