@@ -45,7 +45,7 @@ jobs:
               npx conventional-changelog-cli -p angular -r 0 > release_notes.md
             else
               echo "Génération entre $PREVIOUS_TAG et $LATEST_TAG"
-              git log --grep="(PackageNugetTemplating)" -E --format=%H | \
+              git log "$PREVIOUS_TAG".."$LATEST_TAG" --grep="($PACKAGE_NAME)" -E --format=%H | \
               xargs -I {} npx conventional-changelog-cli -p angular --commit-path {} -o release_notes.md
             fi
 
@@ -75,3 +75,4 @@ jobs:
           generate_release_notes: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
