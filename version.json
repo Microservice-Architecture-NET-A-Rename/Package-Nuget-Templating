@@ -4,10 +4,11 @@
   "publicReleaseRefSpec": [
     "^refs/tags/(.+)-v\\d+\\.\\d+"
   ],
-  "inherit": false, 
+  "inherit": false,
   "cloudBuild": {
     "buildNumber": {
       "enabled": true
     }
   }
 }
+
