@@ -31,28 +31,18 @@ jobs:
         run: |
             PACKAGE_NAME="PackageNugetTemplating"
 
-            # Récupérer le dernier tag (le plus récent)
-            LATEST_TAG=$(git describe --tags --abbrev=0)
+            TAG_COUNT=$(git tag -l "PackageNugetTemplating-v*" | wc -l)
 
-            # Récupérer l'avant-dernier tag (s'il existe)
-            PREVIOUS_TAG=$(git tag -l "PackageNugetTemplating-v*" --sort=-v:refname | sed -n '2p')
-
-            echo "Latest tag $LATEST_TAG"
-            echo "Previous tag $PREVIOUS_TAG"
-
-            if [ -z "$PREVIOUS_TAG" ]; then
-              echo "Pas de tag précédent trouvé. Génération depuis le début du projet."
-              npx conventional-changelog-cli -t $PACKAGE_NAME-v -p angular --commit-path=./$PACKAGE_NAME -r 0 > release_notes.md
-            else
-              echo "Génération entre $PREVIOUS_TAG et $LATEST_TAG"              
+            if [ "$TAG_COUNT" -ge 2 ]; then
               npx conventional-changelog-cli -t $PACKAGE_NAME-v -p angular --commit-path=./$PACKAGE_NAME -r 2 > release_notes.md
+            else
+              npx conventional-changelog-cli -t $PACKAGE_NAME-v -p angular --commit-path=./$PACKAGE_NAME -r 0 > release_notes.md
+              echo "Pas de tag précédent trouvé. Génération depuis le début du projet."
             fi
-
 
             echo "Contenu de release_notes.md:"
             cat release_notes.md
 
-          
             RELEASE_NOTES=$(cat release_notes.md)
             RELEASE_NOTES_JSON=$(echo "$RELEASE_NOTES" | jq -R -s '.')
             echo "RELEASE_NOTES=$RELEASE_NOTES_JSON" >> $GITHUB_OUTPUT
