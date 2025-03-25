@@ -40,6 +40,7 @@ jobs:
               echo "Pas de tag précédent trouvé. Génération depuis le début du projet."
             fi
 
+
             echo "Contenu de release_notes.md:"
             cat release_notes.md
 
