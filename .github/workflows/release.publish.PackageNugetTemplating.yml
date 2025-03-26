@@ -1,13 +1,60 @@
-name: Publish Package Nuget PackageNugetTemplating
+name: Publish package to GitHub Packages
 
 on:
   release:
     types: [published]
+  workflow_dispatch: # Ajout pour déclenchement manuel
+
+env:
+  DOTNET_VERSION: '8.0.x' # Centralisation de la version
+  CONFIGURATION: Release
 
 jobs:
-   push_to_registry:
-       name: Push package nuget PackageNugetTemplating to registry
+   build:
        runs-on: ubuntu-latest
+       permissions:
+        contents: read
        steps:
          - name: Check out the repo
            uses: actions/checkout@v4
+           with:
+            fetch-depth: 0
+
+         - name: Setup .NET
+           uses: actions/setup-dotnet@v4
+           with:
+             dotnet-version: ${{ env.DOTNET_VERSION }}
+
+         - name: Restaurer les dépendances
+           run: dotnet restore
+
+         - name: Build
+           run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
+
+         - name: Créer l'artefact NuGet
+           run: dotnet pack --configuration ${{ env.CONFIGURATION }} --output ./artifacts --no-build
+
+         - uses: actions/upload-artifact@v4
+           with:
+             name: nuget-package
+             path: ./artifacts/*.nupkg
+             retention-days: 1
+
+   publish:
+       needs: build
+       runs-on: ubuntu-latest
+       permissions:
+        packages: write
+        contents: read
+       steps:
+         - uses: actions/download-artifact@v4
+           with:
+              name: nuget-package
+         
+         - name: Setup .NET
+           uses: actions/setup-dotnet@v4
+
+         - name: Pousser vers GitHub Packages
+           run: dotnet nuget push "*.nupkg" --skip-duplicate --source "github"
+           env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
