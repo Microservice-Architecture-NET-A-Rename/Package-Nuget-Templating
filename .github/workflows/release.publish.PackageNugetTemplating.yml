@@ -3,7 +3,7 @@ name: Publish package to GitHub Packages
 on:
   release:
     types: [published]
-  workflow_dispatch: # Ajout pour déclenchement manuel
+ # workflow_dispatch: # Ajout pour déclenchement manuel
 
 env:
   DOTNET_VERSION: '8.0.x' # Centralisation de la version
