@@ -8,6 +8,7 @@ on:
 env:
   DOTNET_VERSION: "8.0.x"
   CONFIGURATION: Release
+  NUGET_SOURCE: "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
 
 jobs:
   build:
@@ -51,10 +52,15 @@ jobs:
         with:
           name: nuget-package
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - name: Add NuGet source
+        run: |
+          dotnet nuget add source ${{ env.NUGET_SOURCE }} \
+            --name github \
+            --username ${{ github.actor }} \
+            --password ${{ secrets.GITHUB_TOKEN }} \
+            --store-password-in-clear-text
 
-      - name: Pousser vers GitHub Packages
-        run: dotnet nuget push "*.nupkg" --skip-duplicate --source "github"
+      - name: Push to GitHub Packages
+        run: dotnet nuget push "./artifacts/*.nupkg" --source ${{ env.NUGET_SOURCE }} --skip-duplicate
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NUGET_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
