@@ -1,11 +1,12 @@
 {
   "$schema": "https://raw.githubusercontent.com/dotnet/Nerdbank.GitVersioning/main/src/NerdBank.GitVersioning/version.schema.json",
+  "version": "2.0.0",
   "inherit": true,
-  "version": "2.0", // Version de base si aucun tag ne correspond
   "publicReleaseRefSpec": [
-    "^refs/tags/PackageNugetTemplating-v(?<major>\\d+)\\.(?<minor>\\d+)(?:\\.(?<patch>\\d+))?$",
-    "^refs/heads/main$"
+    "^refs/tags/PackageNugetTemplating-v(?<version>\\d+\\.\\d+\\.\\d+)$"
   ],
-  "tagPrefix": "PackageNugetTemplating-v",
-  "inheritanceMode": "fallback"
+  "release": {
+    "tagName": "PackageNugetTemplating-v{version}"
+  }
 }
+
