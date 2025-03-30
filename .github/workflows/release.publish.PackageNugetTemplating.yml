@@ -9,6 +9,7 @@ env:
   DOTNET_VERSION: "8.0.x"
   CONFIGURATION: Release
   NUGET_SOURCE: "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+  PACKAGE_NAME: "PackageNugetTemplating"
 
 jobs:
   build:
@@ -21,6 +22,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Extract version from tag
+        id: extract_version
+        run: |
+          TAG_NAME="${{ github.event.release.tag_name }}"
+          VERSION="${TAG_NAME#PackageNugetTemplating-v}"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Extracted version: ${VERSION}"
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -30,10 +39,10 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
+        run: dotnet build ./${{ env.PACKAGE_NAME }}/${{ env.PACKAGE_NAME }}.csproj --configuration ${{ env.CONFIGURATION }} --no-restore
 
       - name: Cr�er l'artefact NuGet
-        run: dotnet pack --configuration ${{ env.CONFIGURATION }} --output ./artifacts --no-build
+        run: dotnet pack -p:PackageVersion=${{ steps.extract_version.outputs.version }} ./${{ env.PACKAGE_NAME }}/${{ env.PACKAGE_NAME }}.csproj --configuration ${{ env.CONFIGURATION }} --output ./artifacts --no-build
 
       - uses: actions/upload-artifact@v4
         with:
