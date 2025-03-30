@@ -1,0 +1,76 @@
+name: Publish package to GitHub Packages
+
+on:
+  release:
+    types: [published]
+  # workflow_dispatch: # Ajout pour d�clenchement manuel
+
+env:
+  DOTNET_VERSION: "8.0.x"
+  CONFIGURATION: Release
+  NUGET_SOURCE: "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+  PACKAGE_NAME: "PackageNugetTemplating"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: extract_version
+        run: |
+          TAG_NAME="${{ github.event.release.tag_name }}"
+          VERSION="${TAG_NAME#PackageNugetTemplating-v}"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Extracted version: ${VERSION}"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restaurer les d�pendances
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build ./${{ env.PACKAGE_NAME }}/${{ env.PACKAGE_NAME }}.csproj --configuration ${{ env.CONFIGURATION }} --no-restore
+
+      - name: Cr�er l'artefact NuGet
+        run: dotnet pack -p:PackageVersion=${{ steps.extract_version.outputs.version }} ./${{ env.PACKAGE_NAME }}/${{ env.PACKAGE_NAME }}.csproj --configuration ${{ env.CONFIGURATION }} --output ./artifacts --no-build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package
+          path: ./artifacts/*.nupkg
+          retention-days: 1
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: nuget-package
+          path: ./artifacts
+
+      - name: Add NuGet source
+        run: |
+          dotnet nuget add source ${{ env.NUGET_SOURCE }} \
+            --name github \
+            --username ${{ github.actor }} \
+            --password ${{ secrets.GITHUB_TOKEN }} \
+            --store-password-in-clear-text
+
+      - name: Push to GitHub Packages
+        run: dotnet nuget push "./artifacts/*.nupkg" --source ${{ env.NUGET_SOURCE }} --skip-duplicate
+        env:
+          NUGET_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
