@@ -88,9 +88,6 @@ git push origin --delete PackageNugetTemplating-v4.0.1
 
 5. **Validation et tagging**
     ```sh
-    # Tests spécifiques à la version
-    npm run test:compatibility --version=2.0.0
-
     # Création des tags
     git tag -a PackageNugetTemplating-v2.0.1 -m "Correction du bug X portée depuis main"
     git tag -a PackageNugetTemplating-v4.0.1 -m "Correction du bug X portée depuis main"
