@@ -86,7 +86,7 @@ git push origin --delete PackageNugetTemplating-v4.0.1
     - Modifier uniquement ce qui est nécessaire pour assurer la compatibilité
     - Conserver le même comportement fonctionnel que sur `main`
 
-5. **Validation et tagging**
+5. **Tagging**
     ```sh
     # Création des tags
     git tag -a PackageNugetTemplating-v2.0.1 -m "Correction du bug X portée depuis main"
