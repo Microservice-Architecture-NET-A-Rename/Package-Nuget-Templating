@@ -100,12 +100,6 @@ git push origin --delete PackageNugetTemplating-v4.0.1
     git push origin hotfix/PackageNugetTemplating-v4.0.1
     ```
 
-7. **Suppression des tags obsolètes (si nécessaire)**
-    ```sh
-    git tag -d PackageNugetTemplating-v4.0.1
-    git push origin --delete PackageNugetTemplating-v4.0.1
-    ```
-
 ### Bonnes Pratiques
 
 1. 🚫 **Interdiction** de développer directement sur les branches de release
