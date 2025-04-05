@@ -44,7 +44,7 @@
 *   **Explication de la configuration** :
     *   `packageSources` : Définit les sources de packages NuGet.
     *   `LocalFeed` : Pointe vers un dossier local où sont stockés les packages en développement.
-    *   `packageSourceMapping` : Définit la priorité des sources. Ici, `LocalFeed` a la priorité absolue grâce à ``.
+    *   `packageSourceMapping` : Définit la priorité des sources. Ici, `LocalFeed` a la priorité absolue grâce à `<package pattern="*" />.`.
 
 #### Tests Locaux
 
