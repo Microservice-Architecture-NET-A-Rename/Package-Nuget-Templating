@@ -251,6 +251,57 @@ Publie une release GitHub en mode brouillon avec les notes de release générée
 4. **Réduction des conflits** : Intégration continue du code.
 5. **Gestion des correctifs facilitée** : Application rapide des hotfixes avec des branches temporaires.
 
+
+Voici la section à ajouter à la fin de ta documentation pour préciser que ce processus est conçu pour fonctionner efficacement avec des **monorepos** :
+
+---
+
+## Support des Monorepos
+
+Ce workflow est pleinement compatible avec une architecture **monorepo**, dans laquelle plusieurs packages ou modules cohabitent au sein d’un même dépôt Git. Le package **PackageNugetTemplating** est ainsi traité comme une unité autonome dans un environnement partagé.
+
+### Spécificités du support monorepo
+
+- ✅ **Isolation des changements** : Le workflow se base sur le chemin `./PackageNugetTemplating` pour détecter les commits pertinents, assurant que seules les modifications relatives à ce package déclenchent une génération de release.
+  
+- 🎯 **Détection ciblée des commits** :
+  - Le paramètre `--commit-path=./PackageNugetTemplating` dans `conventional-changelog-cli` garantit que les notes de release ne tiennent compte que des changements dans le répertoire du package concerné.
+
+- 🔄 **Coexistence avec d'autres packages** :
+  - Le même dépôt peut héberger plusieurs workflows similaires, chacun dédié à un package différent.
+  - Il suffit de déclencher ces workflows sur des tags spécifiques à chaque package, par exemple :
+    ```yaml
+    on:
+      push:
+        tags:
+          - "PackageNugetTemplating-v*.*.*"
+          - "AnotherPackage-v*.*.*"
+    ```
+
+- 🔧 **Maintenance centralisée** : En regroupant les packages dans un seul dépôt, il devient plus simple de gérer les dépendances internes et de maintenir une cohérence entre les modules.
+
+### Exemple : Structure typique d’un monorepo
+
+```
+/
+├── .github/
+│   └── workflows/
+│       ├── create-release-nugettemplating.yml
+│       └── create-release-anotherpackage.yml
+├── PackageNugetTemplating/
+│   ├── src/
+│   └── ...
+├── AnotherPackage/
+│   ├── src/
+│   └── ...
+```
+
+### Bonnes pratiques en contexte monorepo
+
+- 🏷️ **Nommage explicite des tags** pour chaque package afin de bien identifier le contexte.
+- 📁 **Conventions de répertoires claires** pour éviter les confusions dans les détections de changements.
+- 🤝 **Coordination inter-package** si plusieurs packages sont liés, afin de gérer les versions compatibles et les dépendances croisées.
+
 ## Conclusion
 
 Ce workflow optimise la gestion des versions en s'appuyant sur Trunk Based Development et l'utilisation de tags immuables. Il élimine la nécessité de maintenir des branches de release complexes tout en assurant un suivi précis des modifications et en facilitant l'application de correctifs ciblés.
