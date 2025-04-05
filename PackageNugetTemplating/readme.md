@@ -1,89 +1,113 @@
-# Package-Nuget-Templating
+## Implémentation et Flux de Travail NuGet
 
-## Objectif du projet
+### 1. Flux de Travail Actuels
 
-Ce projet vise à développer un template pour faciliter la création rapide de packages .NET, incluant tous les workflows nécessaires à leur publication et à la génération automatique de notes de version.
+*   **workflow.release.create.PackageNugetTemplating** :
+    *   Objectif : Création d'une release préliminaire (brouillon) du package NuGet.
+    *   Référence : [workflow.release.create.PackageNugetTemplating.md](https://github.com/Microservice-Architecture-NET-A-Rename/Package-Nuget-Templating/blob/main/PackageNugetTemplating/docs/workflow.release.create.PackageNugetTemplating.md)
+*   **workflow.release.publish.PackageNugetTemplating** :
+    *   Objectif : Publication du package NuGet.
+    *   Référence : [workflow.release.publish.PackageNugetTemplating.md](https://github.com/Microservice-Architecture-NET-A-Rename/Package-Nuget-Templating/blob/main/PackageNugetTemplating/docs/workflow.release.publish.PackageNugetTemplating.md)
 
-## État actuel
+### 2. Processus de Développement des Packages
 
-Le projet est actuellement en phase de conception et de documentation. Aucune implémentation n'a encore été réalisée.
+#### Priorisation des Sources NuGet
 
-## Fonctionnalités envisagées
+*   **Objectif** : Privilégier les packages en cours de développement par rapport aux versions publiées.
+*   **Méthode** : Utilisation d'un flux local (`LocalFeed`) pour les packages en développement. Ce flux est priorisé dans la configuration NuGet.
+*   **Configuration (`nuget.config`)** :
 
-### Création et gestion de packages
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <packageSources>
+        <clear />
+        <add key="LocalFeed" value="C:\LocalNuGet" />
+        <add key="Github" value="https://nuget.pkg.github.com/Microservice-Architecture-NET-A-Rename/index.json" />
+        <add key="Nuget" value="https://api.nuget.org/v3/index.json" />
+    </packageSources>
 
-- Utilisation de `dotnet.exe` pour la gestion des packages, offrant une meilleure intégration avec l'écosystème .NET.
-- Mise en place d'un processus de test avant publication.
-- Intégration avec GitHub Package Registry pour les flux privés.
+    <packageSourceMapping>
+        <packageSource key="LocalFeed">
+            <package pattern="*" /> <!-- Priorité absolue -->
+        </packageSource>
+        <packageSource key="Github">
+            <package pattern="*" />
+        </packageSource>
+        <packageSource key="Nuget">
+            <package pattern="*" />
+        </packageSource>
+    </packageSourceMapping>
+</configuration>
+```
 
-### Versioning
+*   **Explication de la configuration** :
+    *   `packageSources` : Définit les sources de packages NuGet.
+    *   `LocalFeed` : Pointe vers un dossier local où sont stockés les packages en développement.
+    *   `packageSourceMapping` : Définit la priorité des sources. Ici, `LocalFeed` a la priorité absolue grâce à ``.
 
-- Utilisation de Nerdbank.GitVersioning pour l'incrémentation automatique des numéros de version.
-- Stratégie de versionnage uniformisée définie dans un fichier `version.json` à la racine du projet.
-- Utilisation de tags conventionnés pour mettre à jour des packages spécifiques : `{project-name}-v1.0`.
+#### Tests Locaux
 
-### Templates
+*   **Procédure** :
+    1.  Se placer dans le répertoire du projet NuGet.
+    2.  Créer le package avec la version souhaitée et l'envoyer vers le flux local :
 
-Deux templates seront créés :
-1. Configuration du versionnage
-2. Ajout d'un nouveau projet avec un .csproj pré-initialisé dans la solution générée par le premier template
+    ```bash
+    dotnet pack -p:PackageVersion=4.0.0 --configuration Release --output C:\LocalNuGet
+    ```
 
-### Tests locaux
+    3.  Ajouter le package au projet en utilisant la commande `dotnet add package` :
 
-- Développement d'une méthode pour tester localement les packages NuGet sans publication.
+    ```bash
+    dotnet add package PackageNugetTemplating -v 4.0.0
+    ```
 
-### Workflow de publication
+*   **Important** : NuGet utilisera la configuration de mapping des sources pour résoudre les dépendances, priorisant `LocalFeed`.
 
-- Création d'un workflow déclenché à la création d'un tag.
-- Création d'une release en mode brouillon du package à publier.
-- Publication du package sur GitHub Package Registry lors de la publication de la release.
+#### Commandes Utiles
 
-## Configuration du projet
-
-### Installation de Nerdbank.GitVersioning
+*   Lister les sources NuGet configurées :
 
 ```bash
-dotnet tool install --tool-path .config/dotnet-tools nbgv
-.config/dotnet-tools/nbgv install
+dotnet nuget list source --format Detailed
 ```
 
-### Empaquetage des packages NuGet
+*   Lister les packages disponibles dans le flux local :
 
 ```bash
-dotnet pack
+dotnet list package --source LocalFeed
 ```
 
-### Structure du projet
+*   Nettoyer le cache NuGet en cas de problèmes :
 
-- Chaque projet .NET dans la solution représentera un package NuGet.
-- Les informations telles que la description, l'auteur et la société du package seront centralisées dans le .csproj.
-- Important : Pour le PackageId, tous les mots doivent être collés.
-
-### Notes de Release
-
-Les notes de release seront conventionnées comme suit :
-```
-feat(project-name) description 
-fix(project-name) description
+```bash
+dotnet nuget locals all --clear
 ```
 
-## Prochaines étapes
+## Évolutions Futures
 
-1. Finaliser la documentation pour chaque étape du processus.
-2. Implémenter le workflow de création, test et publication.
-3. Intégrer le versioning automatique avec Nerdbank.GitVersioning.
-4. Développer des instructions pour les tests locaux.
-5. Configurer l'intégration avec GitHub Package Registry.
+### 1. Templates de Configuration
 
-## Ressources à explorer
+*   **Objectif** : Simplifier la configuration des sources NuGet pour les nouveaux projets.
+*   **Description** : Créer un template qui configure automatiquement les sources NuGet nécessaires.
 
-- [GitVersion Documentation](https://gitversion.net/docs/)
-- [GitHub Packages Documentation](https://docs.github.com/fr/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry)
-- [NuGet Package Versioning](https://learn.microsoft.com/en-us/nuget/concepts/package-versioning?tabs=semver20sort)
-- [NuGet Symbol Packages](https://learn.microsoft.com/en-us/nuget/create-packages/symbol-packages-snupkg)
-- [Signing NuGet Packages](https://learn.microsoft.com/fr-fr/nuget/create-packages/sign-a-package)
-- [NuGet CLI Reference](https://learn.microsoft.com/fr-fr/nuget/reference/cli-reference/cli-ref-sources)
-- [Azure DevOps Artifacts](https://learn.microsoft.com/fr-fr/azure/devops/artifacts/nuget/publish?view=azure-devops)
-- [Nerdbank.GitVersioning](https://github.com/dotnet/Nerdbank.GitVersioning)
+### 2. Template de Projet Pré-Initialisé
 
-Note : Ce projet est en cours de développement. Les fonctionnalités et les processus décrits sont sujets à modification au fur et à mesure de l'avancement du projet.
+*   **Objectif** : Faciliter la création de nouveaux projets NuGet avec un workflow de publication intégré.
+*   **Description** :
+    *   Créer un template de projet avec un fichier `.csproj` pré-rempli (description, auteur, société, etc.).
+    *   Intégrer directement les workflows de création de release et de publication NuGet (éventuellement sous forme de fichiers GitHub Actions).
+    *   Expliquer l'importance de respecter une nomenclature stricte pour le nom du projet.
+
+## Ressources Additionnelles
+
+*   Publication de packages Node.js avec GitHub Packages : [https://docs.github.com/en/actions/use-cases-and-examples/publishing-packages/publishing-nodejs-packages](https://docs.github.com/en/actions/use-cases-and-examples/publishing-packages/publishing-nodejs-packages)
+*   Utilisation du registre NuGet avec GitHub Packages : [https://docs.github.com/fr/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry](https://docs.github.com/fr/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry)
+*   Gestion des versions de packages NuGet : [https://learn.microsoft.com/en-us/nuget/concepts/package-versioning?tabs=semver20sort](https://learn.microsoft.com/en-us/nuget/concepts/package-versioning?tabs=semver20sort)
+*   Packages de symboles (`.snupkg`) pour le débogage : [https://learn.microsoft.com/en-us/nuget/create-packages/symbol-packages-snupkg](https://learn.microsoft.com/en-us/nuget/create-packages/symbol-packages-snupkg)
+*   Référence de la CLI NuGet (sources) : [https://learn.microsoft.com/fr-fr/nuget/reference/cli-reference/cli-ref-sources](https://learn.microsoft.com/fr-fr/nuget/reference/cli-reference/cli-ref-sources)
+*   Publication de packages NuGet sur Azure Artifacts : [https://learn.microsoft.com/fr-fr/azure/devops/artifacts/nuget/publish?view=azure-devops](https://learn.microsoft.com/fr-fr/azure/devops/artifacts/nuget/publish?view=azure-devops)
+*   Création de templates de projets avec `dotnet new` : [https://learn.microsoft.com/fr-fr/dotnet/core/tools/dotnet-new](https://learn.microsoft.com/fr-fr/dotnet/core/tools/dotnet-new)
+*   Flux NuGet locaux : [https://learn.microsoft.com/en-us/nuget/hosting-packages/local-feeds](https://learn.microsoft.com/en-us/nuget/hosting-packages/local-feeds)
+
+
