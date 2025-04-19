@@ -13,7 +13,7 @@
 
 #### Priorisation des Sources NuGet
 
-Voir le repos [SolutionTemplate](https://github.com/Microservice-Architecture-NET-A-Rename/SolutionTemplate)
+Voir le repos [SolutionTemplate - Configuration NuGet](https://github.com/Microservice-Architecture-NET-A-Rename/SolutionTemplate?tab=readme-ov-file#%EF%B8%8F-configuration-nuget)
 
 
 #### Tests Locaux
