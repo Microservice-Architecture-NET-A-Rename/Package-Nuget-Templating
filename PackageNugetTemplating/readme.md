@@ -56,13 +56,6 @@ dotnet nuget locals all --clear
 
 ## Évolutions Futures
 
-### 1. Templates de Configuration
-
-*   **Objectif** : Simplifier la configuration des sources NuGet pour les nouveaux projets.
-*   **Description** : Créer un template qui configure automatiquement les sources NuGet nécessaires.
-
-### 2. Template de Projet Pré-Initialisé
-
 *   **Objectif** : Faciliter la création de nouveaux projets NuGet avec un workflow de publication intégré.
 *   **Description** :
     *   Créer un template de projet avec un fichier `.csproj` pré-rempli (description, auteur, société, etc.).
