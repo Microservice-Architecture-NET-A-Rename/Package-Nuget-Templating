@@ -13,38 +13,8 @@
 
 #### Priorisation des Sources NuGet
 
-*   **Objectif** : Privilégier les packages en cours de développement par rapport aux versions publiées.
-*   **Méthode** : Utilisation d'un flux local (`LocalFeed`) pour les packages en développement. Ce flux est priorisé dans la configuration NuGet.
-*   **Configuration (`nuget.config`)** :
+Voir le repos [SolutionTemplate](https://github.com/Microservice-Architecture-NET-A-Rename/SolutionTemplate)
 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<configuration>
-    <packageSources>
-        <clear />
-        <add key="LocalFeed" value="C:\LocalNuGet" />
-        <add key="Github" value="https://nuget.pkg.github.com/Microservice-Architecture-NET-A-Rename/index.json" />
-        <add key="Nuget" value="https://api.nuget.org/v3/index.json" />
-    </packageSources>
-
-    <packageSourceMapping>
-        <packageSource key="LocalFeed">
-            <package pattern="*" /> <!-- Priorité absolue -->
-        </packageSource>
-        <packageSource key="Github">
-            <package pattern="*" />
-        </packageSource>
-        <packageSource key="Nuget">
-            <package pattern="*" />
-        </packageSource>
-    </packageSourceMapping>
-</configuration>
-```
-
-*   **Explication de la configuration** :
-    *   `packageSources` : Définit les sources de packages NuGet.
-    *   `LocalFeed` : Pointe vers un dossier local où sont stockés les packages en développement.
-    *   `packageSourceMapping` : Définit la priorité des sources. Ici, `LocalFeed` a la priorité absolue grâce à `<package pattern="*" />.`.
 
 #### Tests Locaux
 
